@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  bot:
+    build: .
+    environment:
+      - TOKEN_BOT=${TOKEN_BOT}
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    command: ["python", "main.py"]
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+
+  updater:
+    build: .
+    environment:
+      - TOKEN_BOT=${TOKEN_BOT}
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+    command: ["python", "-c", "import asyncio; from main import update_rates; asyncio.run(update_rates())"]
